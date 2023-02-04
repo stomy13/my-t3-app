@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { prisma } from "../../db";
 
-export const exampleRouter = createTRPCRouter({
+export const taskRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
     .query(({ input }) => {
@@ -11,8 +12,9 @@ export const exampleRouter = createTRPCRouter({
       };
     }),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const tasks = await prisma.task.findMany();
+    return tasks;
   }),
 
   getSecretMessage: protectedProcedure.query(() => {
